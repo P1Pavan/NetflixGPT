@@ -1,6 +1,11 @@
 import React, { useRef, useState } from "react";
 import Header from "./Header";
 import Checkvalidate from "../utils/Validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebaseConfig";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -10,8 +15,51 @@ const Login = () => {
   const password = useRef(null);
 
   const handleButtonClick = () => {
-    const Message = Checkvalidate(name?.current?.value,email?.current?.value, password?.current?.value);
+    const Message = Checkvalidate(
+      name?.current?.value,
+      email?.current?.value,
+      password?.current?.value
+    );
     setErrorMSG(Message);
+    if (Message) return;
+
+    if (!isSignInForm) {
+      createUserWithEmailAndPassword(
+        auth,
+        email?.current?.value,
+        password?.current?.value
+      )
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          
+          
+
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMSG(errorCode, " - ", errorMessage);
+          // ..
+        });
+    } else {
+      signInWithEmailAndPassword(
+        auth,
+        email?.current?.value,
+        password?.current?.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMSG(errorCode, " - ", errorMessage);
+        });
+    }
   };
 
   const ToggleSignInForm = () => {
@@ -41,6 +89,7 @@ const Login = () => {
         </h3>
         {isSignInForm ? null : (
           <input
+            required
             ref={name}
             className="border-2  bg-transparent rounded-lg p-5 w-full mb-8 text-xl "
             type="name"
@@ -48,12 +97,14 @@ const Login = () => {
           />
         )}
         <input
+          required
           ref={email}
           className="border-2  bg-transparent rounded-lg p-5 w-full text-xl "
           type="email"
-          placeholder="Email or mobile number"
+          placeholder="Email Id"
         />
         <input
+          required
           ref={password}
           className="border-2  bg-transparent border-gray-400 rounded-lg p-5 w-full mt-8 mb-7 text-xl"
           type="password"

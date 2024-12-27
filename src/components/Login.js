@@ -4,10 +4,16 @@ import Checkvalidate from "../utils/Validate";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../utils/firebaseConfig";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/Store/userSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMSG, setErrorMSG] = useState(null);
   const name = useRef(null);
@@ -32,8 +38,34 @@ const Login = () => {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
-          
-          
+          updateProfile(user, {
+            displayName: name?.current?.value,
+            photoURL:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6BZOF3Q_7W2eWVbzKRnl5dJa2j0G8xsw5adjy__VZR4Qqmk7fNHVEmkCoux47oMGyOBc&usqp=CAU",
+          })
+            .then(() => {
+              const { uid, email, displayName, photoURL } = auth?.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+              navigate("/browse");
+              // Profile updated!
+              // ...
+            })
+            .catch((error) => {
+              console.log(error?.message);
+
+              // An error occurred
+              // ...
+            });
+
+          console.log(user);
+          console.log(auth);
 
           // ...
         })
@@ -52,6 +84,24 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
+          updateProfile(user, {
+            displayName: name?.current?.value,
+            photoURL:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6BZOF3Q_7W2eWVbzKRnl5dJa2j0G8xsw5adjy__VZR4Qqmk7fNHVEmkCoux47oMGyOBc&usqp=CAU",
+          })
+            .then(() => {
+              navigate("/browse");
+              console.log(user);
+
+              // Profile updated!
+              // ...
+            })
+            .catch((error) => {
+              console.log(error?.message);
+
+              // An error occurred
+              // ...
+            });
           // ...
         })
         .catch((error) => {

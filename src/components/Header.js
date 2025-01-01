@@ -1,14 +1,17 @@
-import { getAuth, signOut } from "firebase/auth";
-import React from "react";
-import { useSelector } from "react-redux";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { addUser, removeUser } from "../utils/Store/userSlice";
+import { Netflix_LOGO } from "../utils/Constants";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const auth = getAuth();
-  const user = useSelector(store => store?.user);
-  
+  const user = useSelector((store) => store?.user);
+
   console.log(user);
-  
+
   const navigate = useNavigate();
 
   const handleSignOut = () => {
@@ -23,26 +26,51 @@ const Header = () => {
       });
   };
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(
+          addUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            photoURL: photoURL,
+          })
+        );
+        navigate("/browse")
+
+        // ...
+      } else {
+        dispatch(removeUser());
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <div className="  flex  justify-between items-center">
+    <div className="absolute z-10 w-screen flex justify-between items-center bg-gradient-to-b from-black "> 
       <div>
-      <img
-        className="absolute w-72 z-10 ml-36 mt-6"
-        src="https://help.nflxext.com/helpcenter/OneTrust/oneTrust_production/consent/87b6a5c0-0104-4e96-a291-092c11350111/01938dc4-59b3-7bbc-b635-c4131030e85f/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
-        alt="Netflix Logo"
-      />
+        <img
+          className=" w-56  ml-36 mt-6"
+          src= {Netflix_LOGO}
+          alt="Netflix Logo"
+        />
       </div>
       {user && (
-        <div className=" z-10 absolute right-8 top-4 p-6 mr-6 cursor-pointer mt-6 gap-4 flex justify-between">
-          <img className="rounded-md h-20 w-20 " src={user?.photoURL} alt="" />
+        <div className="opacity-80  right-8 top-4 p-6 mr-6 cursor-pointer mt-6 gap-4 flex justify-between  ">
+          <img className="rounded-md h-12 w-12 " src={user?.photoURL} alt="" />
           <button
             onClick={handleSignOut}
-            className="font-bold  text-red-500 text-xl hover:text-red-300"
+            className="font-bold  text-red-500 text-base hover:text-red-300"
           >
-          <p className="text-2xl px-3 bg-white rounded-lg text-red-500 hover:text-red-300">{user?.displayName === null ? "User" : user?.displayName}</p>
+            <p className="text-base px-3 bg-white rounded-lg text-red-500 hover:text-red-300">
+              {user?.displayName === null ? "User" : user?.displayName}
+            </p>
             Sign Out
           </button>
-
         </div>
       )}
     </div>

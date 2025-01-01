@@ -10,6 +10,7 @@ import { auth } from "../utils/firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/Store/userSlice";
+import { PHOTO_URL } from "../utils/Constants";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -40,8 +41,7 @@ const Login = () => {
           const user = userCredential.user;
           updateProfile(user, {
             displayName: name?.current?.value,
-            photoURL:
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6BZOF3Q_7W2eWVbzKRnl5dJa2j0G8xsw5adjy__VZR4Qqmk7fNHVEmkCoux47oMGyOBc&usqp=CAU",
+            photoURL:PHOTO_URL,
           })
             .then(() => {
               const { uid, email, displayName, photoURL } = auth?.currentUser;
@@ -132,17 +132,17 @@ const Login = () => {
 
       <form
         onSubmit={(e) => e.preventDefault()}
-        style={{ width: "30%" }}
-        className="absolute bg-opacity-65  bg-black text-white right-0 rounded-lg left-0 mx-auto    bottom-0  py-14  px-20"
+        style={{ width: "38%" }}
+        className="absolute bg-opacity-65  bg-black text-white right-0 rounded-lg left-0 mx-auto  h-3/4  bottom-0  py-12  px-16"
       >
-        <h3 className="text-white mb-6 text-4xl font-bold">
+        <h3 className="text-white mb-6 text-2xl font-bold">
           {isSignInForm ? "Sign In " : "Sign Up "}
         </h3>
         {isSignInForm ? null : (
           <input
             required
             ref={name}
-            className="border-2  bg-transparent rounded-lg p-5 w-full mb-8 text-xl "
+            className="border-2  bg-transparent rounded-lg p-3 w-full mb-6 text-sm "
             type="name"
             placeholder="Name"
           />
@@ -150,20 +150,20 @@ const Login = () => {
         <input
           required
           ref={email}
-          className="border-2  bg-transparent rounded-lg p-5 w-full text-xl "
+          className="border-2  bg-transparent rounded-lg p-3 w-full text-sm "
           type="email"
           placeholder="Email Id"
         />
         <input
           required
           ref={password}
-          className="border-2  bg-transparent border-gray-400 rounded-lg p-5 w-full mt-8 mb-7 text-xl"
+          className="border-2  bg-transparent border-gray-400 rounded-lg p-3 w-full mt-6 mb-5 text-sm"
           type="password"
           placeholder="Password"
         />
         <p className="text-red-500 font-bold text-lg">{errorMSG}</p>
         <button
-          className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md mt-7 text-xl w-full"
+          className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-md mt-5 text-base w-full"
           onClick={handleButtonClick}
         >
           {isSignInForm ? "Sign In " : "Sign Up "}
@@ -172,19 +172,19 @@ const Login = () => {
         <p className="text-center mt-2">
           <a
             href="#"
-            className="text-gray-400 hover:text-gray-600 text-center  mt-2 text-xl "
+            className="text-gray-400 hover:text-gray-600 text-center  mt-3 mb-3 text-small "
           >
             Forgot Password?
           </a>
         </p>
-        <div className="flex text-white mt-5 text-xl">
+        {/* <div className="flex text-white mt-5 text-base">
           <input
             className="rounded-md w-6 mr-4 cursor-pointer mb-5 h-6"
             type="checkbox"
           />
           <h3>Remember me</h3>
-        </div>
-        <h3 className="text-xl mb-6">
+        </div> */}
+        <h3 className="text-base text-center mb-5 mt-3">
           {isSignInForm ? "New to Netflix?" : "Already a Registered User?  "}{" "}
           <a
             href="#"
@@ -194,12 +194,12 @@ const Login = () => {
             {isSignInForm ? "Sign up now." : "Sign In "}
           </a>
         </h3>
-        <h4 className="text-gray-500">
+        {/* <p className="text-gray-500 text-base ">
           This page is protected by Google reCAPTCHA to ensure you're not a bot.{" "}
           <a href="#" className="cursor-pointer text-blue-700">
             Learn more.
           </a>
-        </h4>
+        </p> */}
       </form>
     </div>
   );
